@@ -5,24 +5,22 @@ import tr.instagram.app.App;
 
 import java.util.List;
 
+
 public class Scrapper {
 
-    public static void getFollowers(){
+    public static void main(String[] args){
         App app = new App();
-        app.setUsername();
-        app.setPassword();
-        app.clickSubmitButton();
-        app.navigateToProfile();
-        app.clickFollowers();
-        app.scrollDownModal();
-        List<WebElement> followers = app.getFollowers();
-        for (WebElement follower : followers){
-            System.out.println(follower.getText());
-        }
+        app.goToScrappedProfile();
+        List<String> followers = app.getFollowers();
+        List<String> followings = app.getFollowings();
+        System.out.println(followers.size());
+        System.out.println(followings.size());
     }
 
-    public static void main(String[] args) {
-        getFollowers();
-    }
+
+
+
+
+
 
 }

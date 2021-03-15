@@ -17,7 +17,7 @@
 <!--        Password of the account-->
         <password.property>password</password.property>
 <!--        Account to be scrapped. If u want to scrap your own account leave it as "".     -->
-        <account-to-be-scrapped>""</account-to-be-scrapped>
+        <account-to-be-scrapped>accountName</account-to-be-scrapped>
     </properties>
 
     <build>

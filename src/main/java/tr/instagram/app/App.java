@@ -6,7 +6,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import tr.instagram.reader.PropertiesReader;
-
+import java.util.ArrayList;
 import java.util.List;
 
 public class App {
@@ -32,19 +32,50 @@ public class App {
         }
     }
 
-    public void setUsername(){
+    public void goToScrappedProfile(){
+        setUsername();
+        setPassword();
+        clickSubmitButton();
+        navigateToProfile();
+    }
+
+    public List<String> getFollowers(){
+        clickFollowers();
+        scrollDownModal();
+        List<WebElement> followers = getAccountNames();
+        List<String> followerStrList = new ArrayList<>();
+        for (WebElement follower : followers){
+            followerStrList.add(follower.getText());
+        }
+        closeModal();
+        return followerStrList;
+    }
+
+    public List<String> getFollowings(){
+        clickFollowings();
+        scrollDownModal();
+        List<WebElement> followings = getAccountNames();
+        List<String> followingList = new ArrayList<>();
+        for (WebElement follower : followings){
+            followingList.add(follower.getText());
+        }
+        closeModal();
+        return followingList;
+    }
+
+    private void setUsername(){
         WebElement username = driver.findElement(new By.ByCssSelector("input[name='username']"));
         username.click();
         username.sendKeys(account.getUsername());
     }
 
-    public void setPassword(){
+    private void setPassword(){
         WebElement password = driver.findElement(new By.ByCssSelector("input[name='password']"));
         password.click();
         password.sendKeys(account.getPassword());
     }
 
-    public void clickSubmitButton(){
+    private void clickSubmitButton(){
         driver.findElement(new By.ByCssSelector("button[type='submit']")).click();
         try {
             Thread.sleep(5000);
@@ -53,7 +84,7 @@ public class App {
         }
     }
 
-    public void navigateToProfile(){
+    private void navigateToProfile(){
         try {
             propertiesReader = new PropertiesReader("properties-from-pom.properties");
         }catch (Exception e){
@@ -67,11 +98,19 @@ public class App {
     }
 
 
-    public void clickFollowers(){
+    private void clickFollowers(){
+        clickFollowerOrFollowing("followers");
+    }
+
+    private void clickFollowings(){
+        clickFollowerOrFollowing("following");
+    }
+
+    private void clickFollowerOrFollowing(String str){
         if (!propertiesReader.getProperty("account-to-be-scrapped").equals("")){
-            driver.findElement(new By.ByCssSelector("a[href='/"+propertiesReader.getProperty("account-to-be-scrapped")+"/followers/'")).click();
+            driver.findElement(new By.ByCssSelector("a[href='/"+propertiesReader.getProperty("account-to-be-scrapped")+"/".concat(str)+"/'")).click();
         }else{
-            driver.findElement(new By.ByCssSelector("a[href='/"+account.getUsername()+"/followers/'")).click();
+            driver.findElement(new By.ByCssSelector("a[href='/"+account.getUsername()+"/".concat(str)+"/'")).click();
         }
         try {
             Thread.sleep(5000);
@@ -80,7 +119,7 @@ public class App {
         }
     }
 
-    public void scrollDownModal(){
+    private void scrollDownModal(){
         String jsScript = "page = document.querySelector('.isgrP');" +
                 "page.scrollTo(0,page.scrollHeight);" +
                 "var pageEnd = page.scrollHeight;" +
@@ -88,7 +127,7 @@ public class App {
         int pageEnd = Integer.parseInt(((JavascriptExecutor)driver).executeScript(jsScript).toString());
         while (true){
             try {
-                Thread.sleep(500);
+                Thread.sleep(800);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -100,8 +139,14 @@ public class App {
         }
     }
 
-    public List<WebElement> getFollowers(){
+    private List<WebElement> getAccountNames(){
         return driver.findElements(new By.ByCssSelector(".FPmhX.notranslate._0imsa"));
     }
+
+    private void closeModal(){
+        driver.findElement(new By.ByCssSelector("svg._8-yf5[aria-label='Close']")).click();
+    }
+
+
 
 }
