@@ -1,23 +1,10 @@
 package tr.instagram.app;
 
-import tr.instagram.reader.PropertiesReader;
-
 public class Account {
 
     private String username ;
     private String password ;
 
-    PropertiesReader propertiesReader = null ;
-
-    public Account(){
-        try {
-            propertiesReader = new PropertiesReader("properties-from-pom.properties");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        this.username = propertiesReader.getProperty("username.property") ;
-        this.password = propertiesReader.getProperty("password.property") ;
-    }
 
     public String getUsername(){
         return this.username;
@@ -27,4 +14,11 @@ public class Account {
         return this.password;
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }

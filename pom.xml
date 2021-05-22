@@ -12,31 +12,18 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <selenium.version>3.141.59</selenium.version>
-<!--        Username of the account-->
-        <username.property>username</username.property>
-<!--        Password of the account-->
-        <password.property>password</password.property>
-<!--        Account to be scrapped. If u want to scrap your own account leave it as "".     -->
-        <account-to-be-scrapped>accountName</account-to-be-scrapped>
+        <junit.jupiter.version>5.7.0</junit.jupiter.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>properties-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>write-project-properties</goal>
-                        </goals>
-                        <configuration>
-                            <outputFile>${project.build.outputDirectory}/properties-from-pom.properties</outputFile>
-                        </configuration>
-                    </execution>
-                </executions>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.2.1</version>
+                <configuration>
+                    <mainClass>tr.instagram.scrapper.Scrapper</mainClass>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -52,6 +39,20 @@
             <artifactId>selenium-chrome-driver</artifactId>
             <version>${selenium.version}</version>
         </dependency>
+        <dependency>
+            <groupId>io.github.bonigarcia</groupId>
+            <artifactId>webdrivermanager</artifactId>
+            <version>4.4.3</version>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>${junit.jupiter.version}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
+
+
 
 </project>

@@ -1,26 +1,26 @@
 package tr.instagram.app;
 
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import tr.instagram.reader.PropertiesReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class App {
 
-    WebDriver driver = null;
-    String url = "https://www.instagram.com/";
-    Account account = new Account();
+    WebDriver driver ;
+    String BASE_URL = "https://www.instagram.com/";
+    Account account ;
 
-    PropertiesReader propertiesReader = null ;
-
-    public App(){
-        System.setProperty("webdriver.chrome.driver","drivers/chromedriver");
+    public App(Account account){
+        this.account = account;
+        WebDriverManager.chromedriver().setup();
         driver = new ChromeDriver();
-        driver.get(url);
+        driver.get(BASE_URL);
         try{
             boolean isReady = false;
             while (!isReady){
@@ -32,15 +32,14 @@ public class App {
         }
     }
 
-    public void goToScrappedProfile(){
+    public void login(){
         setUsername();
         setPassword();
         clickSubmitButton();
-        navigateToProfile();
     }
 
-    public List<String> getFollowers(){
-        clickFollowers();
+    public List<String> getFollowers(String profileName){
+        clickFollowers(profileName);
         scrollDownModal();
         List<WebElement> followers = getAccountNames();
         List<String> followerStrList = new ArrayList<>();
@@ -51,8 +50,8 @@ public class App {
         return followerStrList;
     }
 
-    public List<String> getFollowings(){
-        clickFollowings();
+    public List<String> getFollowings(String profileName){
+        clickFollowings(profileName);
         scrollDownModal();
         List<WebElement> followings = getAccountNames();
         List<String> followingList = new ArrayList<>();
@@ -61,6 +60,14 @@ public class App {
         }
         closeModal();
         return followingList;
+    }
+
+    public void navigateToTargetProfile(String profile){
+        driver.navigate().to(BASE_URL.concat(profile));
+    }
+
+    public void quitApp(){
+        driver.quit();
     }
 
     private void setUsername(){
@@ -84,34 +91,16 @@ public class App {
         }
     }
 
-    private void navigateToProfile(){
-        try {
-            propertiesReader = new PropertiesReader("properties-from-pom.properties");
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        if (propertiesReader.getProperty("account-to-be-scrapped").equals("")){
-            driver.navigate().to("https://www.instagram.com/".concat(account.getUsername()));
-        }else{
-            driver.navigate().to("https://www.instagram.com/".concat(propertiesReader.getProperty("account-to-be-scrapped")));
-        }
+    private void clickFollowers(String profileName){
+        clickFollowerOrFollowing(profileName,"followers");
     }
 
-
-    private void clickFollowers(){
-        clickFollowerOrFollowing("followers");
+    private void clickFollowings(String profileName){
+        clickFollowerOrFollowing(profileName, "following");
     }
 
-    private void clickFollowings(){
-        clickFollowerOrFollowing("following");
-    }
-
-    private void clickFollowerOrFollowing(String str){
-        if (!propertiesReader.getProperty("account-to-be-scrapped").equals("")){
-            driver.findElement(new By.ByCssSelector("a[href='/"+propertiesReader.getProperty("account-to-be-scrapped")+"/".concat(str)+"/'")).click();
-        }else{
-            driver.findElement(new By.ByCssSelector("a[href='/"+account.getUsername()+"/".concat(str)+"/'")).click();
-        }
+    private void clickFollowerOrFollowing(String profileName , String str){
+        driver.findElement(new By.ByCssSelector("a[href='/"+profileName+"/".concat(str)+"/'")).click();
         try {
             Thread.sleep(5000);
         }catch (Exception e){
